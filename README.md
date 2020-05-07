@@ -10,12 +10,52 @@
 - run `./create-key-pairs.sh`
   - this needs to be run only once in your AWS account
   - this adds `demo-key-pair` AWS key pair to all your AWS regions
-- run `./create-stacks.sh`
+- run `./create-stacks.sh --stack-name XXXXX`
   - this creates a CloudFormation stack from `cloudformation.yaml` in each AWS region
-- run `./send-command.sh`
-  - this fires `ping-all.sh` on `EC2InstancePingOrigin` to all other EC2 instances
+- create your own s3 bucket,replace your bucket name in the run-test.sh and send-command.sh
+- run `./generate-ec2-input-json.sh --stack-name XXXXX > ec2.json` to generate your own ec2.json file, use it as the input of run-test.sh
+- run `./run-test.sh --stack-name XXXXX --file-name ec2.json`
+  - this fires `run-region-test.sh`,`run-ec2-instance.sh`, and therefore runs `send-command.sh`, `ping-all.sh` on `EC2InstancePingOrigin` to all other EC2 instances
   - go to https://console.aws.amazon.com/ec2/v2/home#Commands:sort=CommandId and find the command you executed in this step
   - the AWS web console from the above link should show the output of the command, which tells you the ping results
+  - in the execution of run-test.sh, you might get a lot of invalid request error, that is because of you never used some region before so AWS need some time to authenticate you for the region first. You might need to run the run-test.sh again after all of the region have validated your access in EC2.
+- After the run-test.sh finished, it will generate multiple logs in the S3 you specified earlier, use following command to create athena table for query:
+```
+CREATE EXTERNAL TABLE results (
+  metadata struct<source_availability_zone:STRING,
+                  target_availability_zone:STRING,
+                  test_uuid:STRING
+                 >,
+  rtt_summary struct<packets_transmitted:INT,
+                     packets_received:INT,
+                     packets_loss_percentage:DOUBLE,
+                     time:struct<unit:string,value:DOUBLE>
+                    >,
+  rtt_statistics struct<min:struct<unit:string,value:DOUBLE>,
+                        avg:struct<unit:string,value:DOUBLE>,
+                        max:struct<unit:string,value:DOUBLE>,
+                        mdev:struct<unit:string,value:DOUBLE>
+                       >
+)
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+LOCATION 's3://samplebucket-richardimaoka-sample-sample/'
+```
+use following command to query the result:
+```
+SELECT
+  metadata.test_uuid,
+  metadata.arget_availability_zone,
+  metadata.source_availability_zone,
+  rtt_statistics.min.value as min_value,
+  rtt_statistics.min.unit  as min_unit,
+  rtt_statistics.max.value as max_value,  rtt_statistics.max.unit  as max_unit,
+  rtt_statistics.avg.value as avg_value,
+  rtt_statistics.avg.unit  as avg_unit
+FROM  "aws_ping_cross_region"."results"
+limit 10;
+```
+
+#####################################################following are some further notes for author richardimaoka#################################################
 
 # save this to  ~/.ssh/demo-key-pair.pub
 

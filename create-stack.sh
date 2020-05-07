@@ -46,11 +46,12 @@ do
     echo "${REGION}: ${NUM_AVAILABILITY_ZONES}"
 
     # If it fails, an error message is displayed and it continues to the next REGION
+    # Fixed an error for {SSH_LOCATION} when it have the extra quote ""
     aws cloudformation create-stack \
       --stack-name "${STACK_NAME}" \
       --template-body file://cloudformation-vpc.yaml \
       --capabilities CAPABILITY_NAMED_IAM \
-      --parameters ParameterKey=SSHLocation,ParameterValue="${SSH_LOCATION}" \
+      --parameters ParameterKey=SSHLocation,ParameterValue=${SSH_LOCATION} \
                    ParameterKey=AWSAccountId,ParameterValue="${AWS_ACCOUNT_ID}" \
                    ParameterKey=VPCCidrBlock,ParameterValue="${VPC_CIDR_BLOCK}" \
                    ParameterKey=RegionSubnet,ParameterValue="${REGION_SUBNET}" \

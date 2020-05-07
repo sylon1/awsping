@@ -14,7 +14,7 @@ trap 'kill -- -$$' INT
 # 0.1 Parse the options
 #################################
 TEST_EXECUTION_UUID=$(uuidgen)
-S3_BUCKET_NAME="samplebucket-richardimaoka-sample-sample"
+S3_BUCKET_NAME="awsping-houxiong"
 for OPT in "$@"
 do
     case "$OPT" in

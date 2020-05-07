@@ -1,5 +1,5 @@
 DEFAULT_REGION=$(aws configure get region)
-S3_BUCKET_NAME="samplebucket-richardimaoka-sample-sample"
+S3_BUCKET_NAME="awsping-houxiong"
 
 for OPT in "$@"
 do
