@@ -3,6 +3,7 @@
 ### pre-requisites
 
 - AWS CLI installed on your local machine
+- jq is installed on your machine, eg yum install jq
 
 
 ## steps to run the example
