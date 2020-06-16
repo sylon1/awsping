@@ -45,7 +45,7 @@ use following command to query the result:
 ```
 SELECT
   metadata.test_uuid,
-  metadata.arget_availability_zone,
+  metadata.target_availability_zone,
   metadata.source_availability_zone,
   rtt_statistics.min.value as min_value,
   rtt_statistics.min.unit  as min_unit,
