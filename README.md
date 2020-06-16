@@ -11,7 +11,7 @@
 - run `./create-key-pairs.sh`
   - this needs to be run only once in your AWS account
   - this adds `demo-key-pair` AWS key pair to all your AWS regions
-- run `./create-stacks.sh --stack-name XXXXX`
+- run `./create-stack.sh --stack-name XXXXX`
   - this creates a CloudFormation stack from `cloudformation.yaml` in each AWS region
 - create your own s3 bucket,replace your bucket name in the run-test.sh and send-command.sh
 - run `./generate-ec2-input-json.sh --stack-name XXXXX > ec2.json` to generate your own ec2.json file, use it as the input of run-test.sh
